@@ -13,12 +13,13 @@ model = load_model('model.h5')
 nltk.download('punkt')
 nltk.download('stopwords')
 
-
+tokenizer = Tokenizer(num_words=10000)
+tokenizer.fit_on_texts(['your sample text'])
 
 @app.route('/fetch_news', methods=['GET'])
 def fetch_news():
     keyword = request.args.get('keyword')
-    news_api_url = f'https://newsapi.org/v2/everything?q={keyword}&apiKey=YOUR_NEWS_API_KEY'
+    news_api_url = f'https://newsapi.org/v2/everything?q={keyword}&apiKey=b6c9af69e1bb4f45ba61a003a71b20b0'
     response = requests.get(news_api_url)
     if response.status_code == 200:
         news_data = response.json()
@@ -46,7 +47,6 @@ max_sequence_length = 100
 def predict_sentiment():
     data = request.get_json(force=True)
     text = data['text']
-
     cleaned_text = preprocess_text(text)
     sequence = tokenizer.texts_to_sequences([cleaned_text])
     padded_sequence = pad_sequences(sequence, maxlen=max_sequence_length)
