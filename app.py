@@ -1,4 +1,5 @@
 import streamlit as st
+import tensorflow_hub as hub
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
@@ -16,7 +17,7 @@ nltk.download('stopwords')
 
 # Load the model with custom objects
 custom_objects = {'Orthogonal': Orthogonal}
-model = load_model('model.h5', custom_objects=custom_objects)
+model = load_model('model.h5', custom_objects={'KerasLayer':hub.KerasLayer})
 
 # Initialize the tokenizer
 tokenizer = Tokenizer(num_words=10000)
