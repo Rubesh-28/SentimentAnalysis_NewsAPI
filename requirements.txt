@@ -2,3 +2,4 @@ requests
 tensorflow
 nltk
 streamlit
+tensorflow_hub
