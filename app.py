@@ -8,13 +8,15 @@ from nltk.tokenize import word_tokenize
 import re
 import requests
 import nltk
+from tensorflow.keras.initializers import Orthogonal
 
 # Download necessary NLTK data
 nltk.download('punkt')
 nltk.download('stopwords')
 
-# Load the model
-model = load_model('model.h5')
+# Load the model with custom objects
+custom_objects = {'Orthogonal': Orthogonal}
+model = load_model('model.h5', custom_objects=custom_objects)
 
 # Initialize the tokenizer
 tokenizer = Tokenizer(num_words=10000)
