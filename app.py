@@ -16,8 +16,8 @@ nltk.download('punkt')
 nltk.download('stopwords')
 
 # Load the model with custom objects
-custom_objects = {'Orthogonal': Orthogonal}
-model = load_model('model.h5', custom_objects={'KerasLayer':hub.KerasLayer})
+custom_objects = {'KerasLayer': hub.KerasLayer, 'Orthogonal': Orthogonal}
+model = load_model('model.h5', custom_objects=custom_objects)
 
 # Initialize the tokenizer
 tokenizer = Tokenizer(num_words=10000)
@@ -82,4 +82,4 @@ if st.button("Predict Sentiment"):
     st.write(f"Sentiment: {sentiment_label}")
 
 st.write("---")
-st.write("Sentiment Analysis by Rubesh K K")
+st.write("Sentiment Analysis by Rubesh K K")
