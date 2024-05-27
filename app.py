@@ -17,7 +17,7 @@ nltk.download('stopwords')
 
 # Load the model with custom objects
 custom_objects = {'KerasLayer': hub.KerasLayer, 'Orthogonal': Orthogonal}
-model = load_model('model.h5', custom_objects=custom_objects)
+model = load_model('Sentiment.h5', custom_objects=custom_objects)
 
 # Initialize the tokenizer
 tokenizer = Tokenizer(num_words=10000)
