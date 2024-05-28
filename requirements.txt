@@ -1,5 +1,5 @@
 requests
-tensorflow
+tensorflow==2.15.0
 nltk
 streamlit
 tensorflow_hub
