@@ -5,36 +5,16 @@ from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
-from nltk.tokenize import word_tokenize, sent_tokenize
 import re
 import requests
 import nltk
 from tensorflow.keras.initializers import Orthogonal
-import os
 
-# Set the NLTK data path explicitly
-nltk_data_path = os.path.join(os.getcwd(), 'nltk_data')
-nltk.data.path.append(nltk_data_path)
-
-# Download necessary NLTK data (moved outside function)
-def download_nltk_resources():
-    try:
-        # Check if punkt is already downloaded
-        nltk.data.find('tokenizers/punkt')
-    except LookupError:
-        st.write("Downloading punkt...")
-        nltk.download('punkt', download_dir=nltk_data_path)  # Specify download directory
-        st.write("punkt downloaded successfully.")
-
-    try:
-        # Check if stopwords is already downloaded
-        nltk.data.find('corpora/stopwords')
-    except LookupError:
-        st.write("Downloading stopwords...")
-        nltk.download('stopwords', download_dir=nltk_data_path)  # Specify download directory
-        st.write("stopwords downloaded successfully.")
-
-download_nltk_resources()  # Call the function to download resources
+# Download only required NLTK resource: stopwords
+try:
+    nltk.data.find('corpora/stopwords')
+except LookupError:
+    nltk.download('stopwords')
 
 # Load the model with custom objects
 @st.cache_resource
@@ -53,17 +33,17 @@ model = load_sentiment_model()
 @st.cache_resource
 def create_tokenizer():
     tokenizer = Tokenizer(num_words=10000)
-    tokenizer.fit_on_texts(['your sample text'])  # Important: Fit on *some* text.
+    tokenizer.fit_on_texts(['your sample text'])  # Fit on dummy text
     return tokenizer
 
 tokenizer = create_tokenizer()
-
 
 # Preprocess text
 def preprocess_text(text):
     stop_words = set(stopwords.words('english'))
     ps = PorterStemmer()
-    words = word_tokenize(text.lower())
+    # Tokenize using regex instead of word_tokenize
+    words = re.findall(r'\b\w+\b', text.lower())
     filtered_words = [ps.stem(word) for word in words if word.isalpha() and word not in stop_words]
     cleaned_text = ' '.join(filtered_words)
     return cleaned_text
@@ -73,14 +53,14 @@ def fetch_news(keyword):
     news_api_url = f'https://newsapi.org/v2/everything?q={keyword}&apiKey=b6c9af69e1bb4f45ba61a003a71b20b0'
     try:
         response = requests.get(news_api_url)
-        response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
+        response.raise_for_status()
         news_data = response.json()
         titles = [article['title'] for article in news_data.get('articles', [])]
         return titles
     except requests.exceptions.RequestException as e:
         st.error(f"Error fetching news: {e}")
         return []
-    except (KeyError, ValueError) as e:  # Catch JSON errors and key errors
+    except (KeyError, ValueError) as e:
         st.error(f"Error processing news data: {e}")
         return []
 
