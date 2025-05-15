@@ -5,23 +5,36 @@ from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
-from nltk.tokenize import word_tokenize
+from nltk.tokenize import word_tokenize, sent_tokenize
 import re
 import requests
 import nltk
 from tensorflow.keras.initializers import Orthogonal
+import os
+
+# Set the NLTK data path explicitly
+nltk_data_path = os.path.join(os.getcwd(), 'nltk_data')
+nltk.data.path.append(nltk_data_path)
 
 # Download necessary NLTK data (moved outside function)
-try:
-    nltk.data.find('tokenizers/punkt')
-except LookupError:
-    nltk.download('punkt')
+def download_nltk_resources():
+    try:
+        # Check if punkt is already downloaded
+        nltk.data.find('tokenizers/punkt')
+    except LookupError:
+        st.write("Downloading punkt...")
+        nltk.download('punkt', download_dir=nltk_data_path)  # Specify download directory
+        st.write("punkt downloaded successfully.")
 
-try:
-    nltk.data.find('corpora/stopwords')
-except LookupError:
-    nltk.download('stopwords')
+    try:
+        # Check if stopwords is already downloaded
+        nltk.data.find('corpora/stopwords')
+    except LookupError:
+        st.write("Downloading stopwords...")
+        nltk.download('stopwords', download_dir=nltk_data_path)  # Specify download directory
+        st.write("stopwords downloaded successfully.")
 
+download_nltk_resources()  # Call the function to download resources
 
 # Load the model with custom objects
 @st.cache_resource
@@ -50,7 +63,6 @@ tokenizer = create_tokenizer()
 def preprocess_text(text):
     stop_words = set(stopwords.words('english'))
     ps = PorterStemmer()
-
     words = word_tokenize(text.lower())
     filtered_words = [ps.stem(word) for word in words if word.isalpha() and word not in stop_words]
     cleaned_text = ' '.join(filtered_words)
